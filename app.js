@@ -34,6 +34,35 @@ db.serialize(() => {
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
+const cors = require('cors');
+app.use(cors());
+
+const items = [
+    { id: 1, name: 'Item 1' },
+    { id: 2, name: 'Item 2' },
+];
+app.get('/api/items', (req, res) => {
+    res.json(items);
+});
+app.post('/api/items', (req, res) => {
+    const newItem = { id: items.length + 1, name: req.body.name };
+    items.push(newItem);
+    res.status(201).json(newItem);
+})
+app.delete('/api/items/:id', (req, res) => {
+    const itemId = parseInt(req.params.id);
+    const index = items.findIndex(item => item.id === itemId);
+    if (index !== -1) {
+        items.splice(index, 1);
+        res.sendStatus(204);
+    } else {
+        res.sendStatus(404);
+    }
+});
+
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
